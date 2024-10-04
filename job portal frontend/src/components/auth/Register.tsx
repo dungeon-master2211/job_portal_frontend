@@ -20,9 +20,12 @@ import {
   } from "@/components/ui/select"
   
 import { Input } from "@/components/ui/input"
+import { useRegisterUserMutation } from "@/services/loginService"
+import { ButtonLoading } from "../ui/button_with_loader"
+import { toast } from 'react-toastify';
 
 const Register = () => {
-
+    
     const registerform = useForm<z.infer<typeof registerSchema>>({
         resolver:zodResolver(registerSchema),
         defaultValues:{
@@ -31,9 +34,24 @@ const Register = () => {
             password:""
         }
     })
-
+    const [registerUserApi,{data,isLoading,error}] = useRegisterUserMutation()
+    console.log(isLoading,data)
+    if(data){
+        toast(data.message,{theme:"dark"})
+    }
+    if(error && 'status' in error){
+        let errMsg = 'error' in error ? error.error : (error.data) 
+        
+        console.log(errMsg)
+        // @ts-ignore
+        let finalErrMsg = 'message' in errMsg ? errMsg.message : '' 
+        // @ts-ignore
+        toast(finalErrMsg,{theme:"dark"})
+        
+    }
     function onSubmitRegisterForm(values:z.infer<typeof registerSchema>){
         console.log(values)
+        registerUserApi(values)
     }
 
   return (
@@ -88,10 +106,12 @@ const Register = () => {
                     </FormItem>
                 )}></FormField>
                 <p className="text-sm">By clicking on Register you agree to our Terms and Conditions.</p>
-                <Button type="submit" className="w-full" >Register</Button>
+                
+                {isLoading?<ButtonLoading className="w-full">Registering..</ButtonLoading>:<Button type="submit" className="w-full" >Register</Button>}
             </form>
 
         </Form>
+        
     </div>
   )
 }

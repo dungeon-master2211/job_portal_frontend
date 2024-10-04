@@ -9,8 +9,10 @@ import {
   navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu"
 import { Button } from "./ui/button"
-
-
+import { useSelector,useDispatch } from "react-redux"
+import { RootState } from "@/store/store"
+import { authenticationService, useLogoutUserMutation } from "@/services/loginService"
+import { loggedOut } from "@/store/loginState"
 const NavMenu = ()=>{
   return (
     <>
@@ -47,7 +49,7 @@ const NavMenu = ()=>{
                   <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to=""> Applied Jobs</NavLink></NavigationMenuLink>
                  </li>
                 <li className="row-span-3">
-                   <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to=""> Posted Jobs</NavLink></NavigationMenuLink> 
+                   <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to="/posted_jobs"> Posted Jobs</NavLink></NavigationMenuLink> 
                 </li>
                 <li className="row-span-3">
                    <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to=""> Messages</NavLink></NavigationMenuLink> 
@@ -73,6 +75,20 @@ const NavCode =()=>{
 }
 
 const Navbar = () => {
+  const {isLoggedIn} = useSelector((store:RootState)=>store.loginState)
+  const dispatch = useDispatch()
+  const [callLogoutApi,{data,error}] = useLogoutUserMutation()
+  function logoutUser(){
+      callLogoutApi()
+      dispatch(authenticationService.util.resetApiState())
+
+  }
+  if(error) console.log(error)
+  if(data){
+    console.log(data)
+    console.log('calling logout reducer')
+    if(data?.status) dispatch(loggedOut())
+  }
   return (
     <>
       <div className="bg-[black] p-4 flex flex-row justify-between items-center text-white">
@@ -84,9 +100,12 @@ const Navbar = () => {
         <div className="hidden sm:block">
         <NavCode/> 
         </div>
+        {isLoggedIn? <Button onClick={()=>logoutUser()}>LogOut</Button> : 
         <Button asChild>
           <NavLink to="/auth">Login</NavLink>
         </Button>
+        }
+        
 
       </div>
       <div className="bg-[black] p-4 flex flex-row justify-between items-center text-white sm:hidden" >

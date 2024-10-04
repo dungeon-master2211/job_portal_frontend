@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,9 +15,14 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "../ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { useState, ChangeEvent } from "react"
+import { usePostJobMutation } from "@/services/fetchJobService"
+import { postJobType } from "@/interfaces_types/interfaces"
+import {toast} from "react-toastify"
+import showErrorToast from "../common/toast_common"
 const ListJob = () => {
-    const [tech,setTech] = useState<string>('')
+    const [_,setTech] = useState<string>('')
     const [techBadge,setTechBadge]= useState<string[]>([])
+    const [postJobApi,{data,error}] = usePostJobMutation()
     function onChangeTech(e:ChangeEvent<HTMLInputElement>){
         let techs:string = e.target?.value
         let techArray:string[] = techs.split(',').filter(item=>item.trim().length!==0)
@@ -37,7 +41,19 @@ const ListJob = () => {
         }
     })
     function onSubmitJobForm(values:z.infer<typeof jobSchema>){
-        console.log(values)
+        let jobData:postJobType = {...values,technologies:techBadge,noOfOpenings:Number(values.noOfOpenings)}
+        console.log(jobData)
+        if(techBadge.length>0){
+            console.log('sending job to list')
+            postJobApi(jobData)
+        }
+    }
+    
+    if(data){
+        if(data.status) toast(data.message,{theme:"dark"})
+    }
+    if(error && 'status' in error){
+        showErrorToast(error)
     }
   return (
     <><h1 className="text-6xl text-center my-5">List A Job</h1>
