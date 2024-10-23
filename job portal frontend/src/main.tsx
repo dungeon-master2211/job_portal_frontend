@@ -6,17 +6,21 @@ import Jobs from './components/Jobs.tsx'
 import CreateJob from './components/CreateJob.tsx'
 import NotFound from './components/NotFound.tsx'
 import Home from './components/Home.tsx'
-
 import { Provider } from 'react-redux'
 import {store} from "./store/store.tsx"
 import Auth from "./components/auth/Auth.tsx"
 import ListJob from './components/list_a_job/ListJob.tsx'
 import JobDetail from './components/JobDetail.tsx'
 import PostedJobs from './components/jobs/PostedJobs.tsx'
+import ViewApplicants from './components/jobs/ViewApplicants.tsx'
+import AppliedJobs from './components/jobs/AppliedJobs.tsx'
+import Protected from './components/common/Protected.tsx'
+import ErrorElement from './components/common/ErrorElement.tsx'
 const route = createBrowserRouter([
   {
     path:'/',
     element:<App/>,
+
     children:[
       {
         path:'/',
@@ -32,11 +36,15 @@ const route = createBrowserRouter([
       },
       {
         path:'/create_job',
-        element:<CreateJob/>
+        element:<Protected allow='admin'><CreateJob/></Protected> 
       },
       {
         path:"/posted_jobs",
-        element:<PostedJobs/>
+        element:<Protected allow='admin'><PostedJobs/></Protected>
+      },
+      {
+        path:"/view_applicants/:id",
+        element:<Protected allow='admin'><ViewApplicants/></Protected>      
       },
       {
         path:'/auth',
@@ -44,9 +52,14 @@ const route = createBrowserRouter([
       },
       {
         path:'/listjob',
-        element:<ListJob/>
+        element:<Protected allow='admin'><ListJob/></Protected>
+      },
+      {
+        path:'/appliedjobs',
+        element:<Protected allow='user'><AppliedJobs/></Protected>
       }
-    ]
+    ],
+    errorElement:<ErrorElement/>
 
   },
   {
@@ -55,9 +68,12 @@ const route = createBrowserRouter([
   }
 ])
 createRoot(document.getElementById('root')!).render(
+
   <Provider store={store}>
-    <RouterProvider router={route}></RouterProvider>
-  </Provider>
+      <RouterProvider router={route}></RouterProvider>
+    </Provider>
+
+  
     
   ,
 )

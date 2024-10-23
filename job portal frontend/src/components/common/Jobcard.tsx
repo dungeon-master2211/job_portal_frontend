@@ -10,7 +10,7 @@ import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import { NavLink } from "react-router-dom"
 
-const Jobcard = ({job}:any) => {
+const Jobcard = ({job,appliedJob=false}:any) => {
     let openTill = job?.openTill
     let postedOn = job?.postedOn
     if(openTill) openTill= new Date(openTill).toDateString()
@@ -38,7 +38,7 @@ const Jobcard = ({job}:any) => {
                 
             </CardContent>
             <CardFooter>
-                <Button className="w-full" asChild><NavLink to={`/job_detail/${job._id}`} >View Details</NavLink></Button>
+                <Button className="w-full" asChild><NavLink to={`/job_detail/${job._id}?${appliedJob?'appliedJob=true':'appliedJob=false'}`} >View Details</NavLink></Button>
             </CardFooter>
         </Card>
 

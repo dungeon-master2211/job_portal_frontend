@@ -40,14 +40,17 @@ const Register = () => {
         toast(data.message,{theme:"dark"})
     }
     if(error && 'status' in error){
-        let errMsg = 'error' in error ? error.error : (error.data) 
+        try{
+            let errMsg = 'error' in error ? error.error : (error.data) 
         
         console.log(errMsg)
         // @ts-ignore
         let finalErrMsg = 'message' in errMsg ? errMsg.message : '' 
         // @ts-ignore
         toast(finalErrMsg,{theme:"dark"})
-        
+        }catch(e){
+            console.log(e)
+        }
     }
     function onSubmitRegisterForm(values:z.infer<typeof registerSchema>){
         console.log(values)

@@ -35,13 +35,17 @@ const Login = () => {
         dispatch(loggedIn(data))
     }
     if(error && 'status' in error){
-        let errMsg = 'error' in error ? error.error : (error.data) 
+        try{
+            let errMsg = 'error' in error ? error.error : (error.data) 
         
         console.log(errMsg)
         // @ts-ignore
         let finalErrMsg = 'message' in errMsg ? errMsg.message : '' 
         // @ts-ignore
         showToast(finalErrMsg)
+        }catch(e){
+            console.log(e)
+        }
         
     }
     function onSubmitLoginForm(values: z.infer<typeof loginFormSchema>){

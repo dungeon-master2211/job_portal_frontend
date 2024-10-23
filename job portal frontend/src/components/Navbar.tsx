@@ -46,14 +46,14 @@ const NavMenu = ()=>{
                   <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to="/listjob"> List a Job</NavLink></NavigationMenuLink> 
                 </li>
                 <li className="row-span-3"> 
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to=""> Applied Jobs</NavLink></NavigationMenuLink>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to="/appliedjobs"> Applied Jobs</NavLink></NavigationMenuLink>
                  </li>
                 <li className="row-span-3">
                    <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to="/posted_jobs"> Posted Jobs</NavLink></NavigationMenuLink> 
                 </li>
-                <li className="row-span-3">
+                {/* <li className="row-span-3">
                    <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild><NavLink to=""> Messages</NavLink></NavigationMenuLink> 
-                </li>
+                </li> */}
                 
               </ul>
                 

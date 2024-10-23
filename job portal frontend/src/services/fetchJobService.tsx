@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { env } from "../config";
-import { userRegistrationReturnType,postJobType, applyToJobRequestType, myPostedJobsReturnType } from "@/interfaces_types/interfaces";
+import { userRegistrationReturnType,postJobType, applyToJobRequestType, myPostedJobsReturnType, viewApplicantsReturnType, changeApplicantStatusArg, myAppliedJobReturnType } from "@/interfaces_types/interfaces";
 
 const BACKEND_URL = env.backendUrl
 
@@ -9,8 +9,12 @@ export const fetchListedJobsApi = createApi({
     baseQuery:fetchBaseQuery({baseUrl:`${BACKEND_URL}/`}),
     tagTypes:['jobs'],
     endpoints:(builder)=>({
-        getListedJobs : builder.query<any,void>({
-            query:()=>`jobs`,
+        getListedJobs : builder.mutation<any,object>({
+            query:(jobQuery)=>({
+                method:'GET',
+                url:'jobs?'+new URLSearchParams({...jobQuery}).toString(),
+
+            }),
         }),
         postJob:builder.mutation<userRegistrationReturnType,Partial<postJobType>>({
             query:(job_detail)=>({
@@ -38,9 +42,37 @@ export const fetchListedJobsApi = createApi({
                 url:`my_jobs/${id}`,
                 credentials:"include"
             })
+        }),
+        viewApplicants:builder.query<viewApplicantsReturnType,string>({
+            query:(id:string)=>({
+                method:'GET',
+                url:`view_applicants/${id}`,
+                credentials:'include'
+            })
+        }),
+        changeApplicantStatus:builder.mutation<userRegistrationReturnType,changeApplicantStatusArg>({
+            query:(queries)=>{
+                const finalQuery = {...queries}
+                return {
+                method:"GET",
+                url:'change_status?'+new URLSearchParams({...finalQuery}).toString(),
+                credentials:"include"
+            }},
+            invalidatesTags:['jobs']
+        }),
+        viewMyAppliedJobs:builder.mutation<myAppliedJobReturnType,string>({
+            query:(queryString)=>({
+                method:"GET",
+                credentials:"include",
+                url:"my_applied_job?companyName="+queryString
+            })
         })
+
+
+
         })
-       
 })
 
-export const {useGetListedJobsQuery,usePostJobMutation,useApplyToJobMutation,useMyPostedJobsQuery} = fetchListedJobsApi
+export const {useGetListedJobsMutation,usePostJobMutation,useApplyToJobMutation,useMyPostedJobsQuery,
+    useViewApplicantsQuery, useChangeApplicantStatusMutation,useViewMyAppliedJobsMutation
+} = fetchListedJobsApi

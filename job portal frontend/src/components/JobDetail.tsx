@@ -1,5 +1,5 @@
-import { useGetListedJobsQuery } from "@/services/fetchJobService";
-import { useParams } from "react-router-dom";
+import { useGetListedJobsMutation } from "@/services/fetchJobService";
+import { NavLink, useLocation, useParams,useSearchParams } from "react-router-dom";
 import CardSkeleton from "./common/cardSkeleton";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -8,12 +8,23 @@ import {
     DialogTrigger,
   } from "@/components/ui/dialog"
 import { ApplyJob } from "./ApplyJob";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useEffect } from "react";
 export default function JobDetail(){
+    const [location,_] = useSearchParams()
+    const appliedJob = location.get('appliedJob')==='true'
+    console.log(appliedJob)
     const params = useParams()
     const id = params.id
-    const {data} = useGetListedJobsQuery()
+    let {id:loggedInUserId,role} = useSelector((store:RootState)=>store.loginState) 
+    let fromRecruiter = role==='admin'
+    const [useGetJobListQuery,{data,isLoading}] = useGetListedJobsMutation()
+    useEffect(()=>{
+        useGetJobListQuery({jobQuery:''})
+    },[])
     const job = data?.jobs?.filter((item:any)=>item._id===id)
-    if (!job?.length) <div className="flex flex-col"><CardSkeleton></CardSkeleton></div> 
+    if (!job?.length || isLoading) <div className="flex flex-col"><CardSkeleton></CardSkeleton></div> 
     function transformDate(date:string){
         try{
             return new Date(date).toDateString()
@@ -47,12 +58,15 @@ export default function JobDetail(){
                     <h2 className="">{job[0]?.jobDescription}</h2>
                 </div>
             </div>
-            <Dialog>
-                <DialogTrigger asChild>
+            { !fromRecruiter ? (!appliedJob ? <Dialog>
+                 <DialogTrigger asChild>
                     <Button >Apply To This Job</Button>
                 </DialogTrigger>
                 <ApplyJob job_id={job[0]?._id}/>
-            </Dialog>
+            </Dialog>:console.log('n')):
+            loggedInUserId===job[0]?.recruitedId?
+            <Button asChild><NavLink to={`/view_applicants/${job[0]?._id}`}>View Applicants</NavLink></Button>
+            :''}
             </>:
             <h2>No Jobs To Show</h2>
             }

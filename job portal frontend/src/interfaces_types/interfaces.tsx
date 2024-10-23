@@ -49,3 +49,33 @@ export interface applyToJobRequestType{
 export interface myPostedJobsReturnType extends userRegistrationReturnType{
     jobs?:postJobType[]
 }
+
+interface applicants{
+    _id:string,
+    appliedBy:object,
+    appliedTo:string,
+    status:Boolean,
+    resumePath:string,
+    __v:number
+}
+interface appliedJobs{
+    _id:string,
+    appliedBy:string,
+    appliedTo:object,
+    status:Boolean,
+    resumePath:string,
+    __v:number
+}
+export interface viewApplicantsReturnType extends userRegistrationReturnType {
+    applicants?:applicants[]
+}
+
+export interface changeApplicantStatusArg{
+    appliedBy:string,
+    appliedTo:string,
+    action:string
+}
+
+export interface myAppliedJobReturnType extends userRegistrationReturnType {
+    jobs?:appliedJobs[]
+}
